@@ -26,6 +26,9 @@ class App extends React.Component {
 
     this.addTrack = this.addTrack.bind(this);
     this.removeTrack = this.removeTrack.bind(this);
+    this.updatePlaylistName = this.updatePlaylistName.bind(this);
+    this.savePlaylist = this.savePlaylist.bind(this);
+    this.search = this.search.bind(this);
   }
 
   addTrack(track) {
@@ -40,9 +43,24 @@ class App extends React.Component {
 
   removeTrack(track) {
     const playlist = this.state.PlaylistTracks;
-    playlist.splice(playlist.findIndex(song => song.id === track.id), 1);
+    playlist.splice(
+      playlist.findIndex((song) => song.id === track.id),
+      1
+    );
 
     this.setState({ playlistTracks: playlist });
+  }
+
+  updatePlaylistName(name) {
+    this.setState({ PlaylistName: name });
+  }
+
+  savePlaylist() {
+    const trackUris = this.state.PlaylistTracks.map((track) => track.uri);
+  }
+
+  search(term){
+    console.log(term);
   }
 
   render() {
@@ -52,7 +70,7 @@ class App extends React.Component {
           Ja<span className="highlight">mmm</span>ing
         </h1>
         <div className="App">
-          <SearchBar />
+          <SearchBar onSearch={this.search} />
           <div className="App-playlist">
             <SearchResults
               searchResults={this.state.SearchResults}
@@ -62,6 +80,8 @@ class App extends React.Component {
               playlistName={this.state.PlaylistName}
               playlistTracks={this.state.PlaylistTracks}
               onRemove={this.removeTrack}
+              onNameChange={this.updatePlaylistName}
+              onSave={this.savePlaylist}
             />
           </div>
         </div>
