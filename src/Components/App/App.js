@@ -1,27 +1,19 @@
 import React from "react";
 import "./App.css";
+
 import SearchBar from "../SearchBar/SearchBar";
 import { SearchResults } from "../SearchResults/SearchResults";
 import { Playlist } from "../Playlist/Playlist";
+import Spotify from "../../util/Spotify";
 
 class App extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      SearchResults: [
-        { name: "name1", artist: "artist1", album: "album1", id: 1 },
-        { name: "name2", artist: "artist2", album: "album2", id: 2 },
-        { name: "name3", artist: "artist3", album: "album3", id: 3 },
-      ],
-
-      PlaylistName: "Playlist1",
-
-      PlaylistTracks: [
-        { name: "name01", artist: "artist01", album: "album01", id: 10 },
-        { name: "name02", artist: "artist02", album: "album02", id: 20 },
-        { name: "name03", artist: "artist03", album: "album03", id: 30 },
-      ],
+      SearchResults: [],
+      PlaylistName: "New Playlist",
+      PlaylistTracks: [],
     };
 
     this.addTrack = this.addTrack.bind(this);
@@ -30,10 +22,15 @@ class App extends React.Component {
     this.savePlaylist = this.savePlaylist.bind(this);
     this.search = this.search.bind(this);
   }
+  search(term) {
+    Spotify.search(term).then((searchResults) => {
+      this.setState({ SearchResults: searchResults });
+    });
+  }
 
   addTrack(track) {
     const tracklist = this.state.PlaylistTracks;
-    if (tracklist.find((song) => song.id === track.id)) {
+    if (tracklist.find((song) => song.ID === track.ID)) {
       return;
     }
     tracklist.push(track);
@@ -56,11 +53,13 @@ class App extends React.Component {
   }
 
   savePlaylist() {
-    // const trackUris = this.state.PlaylistTracks.map((track) => track.uri);
-  }
-
-  search(term){
-    console.log(term);
+    const trackUris = this.state.PlaylistTracks.map((track) => track.URI);
+    Spotify.savePlaylist(this.state.PlaylistName, trackUris).then(() =>
+      this.setState({
+        PlaylistName: "New Playlist",
+        PlaylistTracks: [],
+      })
+    );
   }
 
   render() {
